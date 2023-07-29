@@ -128,4 +128,8 @@ symbol = "terraform "
 [zig]
 symbol = "zig "
 
-
+# This is for fixing the issue where "systemd" is displayed in the prompt
+# when running starship inside WSL
+# https://github.com/starship/starship/pull/4593
+[container]
+disabled = true 

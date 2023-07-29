@@ -49,7 +49,8 @@ return require('packer').startup(function(use)
 	  }
   }
 
+  use 'christoomey/vim-tmux-navigator'
 --  use("folke/zen-mode.nvim")
---  use("github/copilot.vim")
+--  use("github/copilot.vim")kkk
 
 end)
