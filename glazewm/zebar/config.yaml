@@ -31,19 +31,18 @@ window/bar:
   # nesting, we can also target nested elements (e.g. below we set the
   # color and margin-right of icons).
   styles: |
-    background: #c6cfd8;
-    border: 1px solid #f5f5f5;
-
+    background: #fafafa;
+    
     display: grid;
     grid-template-columns: 1fr 0.5fr 1fr;
     align-items: center;
     height: 100%;
-    color: #666666;
+    color: #575f66;
     font-family: JetBrainsMono Nerd Font, monospace;
     font-size: 11px;
     
     i {
-      color: #444444;
+      color: #575f66;
       margin-right: 7px;
     }
 
@@ -58,22 +57,22 @@ window/bar:
         align-items: center;
 
         .workspace {
-          background: rgb(255 255 255 / 15%);
-          margin-right: 4px;
+          background: #fafafa;
           padding: 4px 8px;
-          color: #666666;
+          color: #575f66;
           font-weight: bold;
           border: none;
-          border-radius: 2px;
           cursor: pointer;
 
           &.displayed {
-            background: rgb(255 255 255 / 25%);
+            background: #fafafa;
+            color: #575f66;
           }
 
           &.focused,
           &:hover {
-            background: rgb(75 115 255 / 50%);
+            background: #478acc;
+            color: #fafafa;
           }
         }
       providers: ['glazewm']
