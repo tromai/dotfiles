@@ -32,7 +32,7 @@ window/bar:
   # color and margin-right of icons).
   styles: |
     background: #fafafa;
-    
+
     display: grid;
     grid-template-columns: 1fr 0.5fr 1fr;
     align-items: center;
@@ -40,7 +40,7 @@ window/bar:
     color: #575f66;
     font-family: JetBrainsMono Nerd Font, monospace;
     font-size: 11px;
-    
+
     i {
       color: #575f66;
       margin-right: 7px;

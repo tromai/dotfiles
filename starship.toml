@@ -132,4 +132,4 @@ symbol = "zig "
 # when running starship inside WSL
 # https://github.com/starship/starship/pull/4593
 [container]
-disabled = true 
+disabled = true
