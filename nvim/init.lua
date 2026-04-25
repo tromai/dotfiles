@@ -1,24 +1,24 @@
 vim.g.mapleader = " "
-vim.g.maplocalleader = ' '
+vim.g.maplocalleader = " "
 local opt = vim.opt
 
 vim.opt.clipboard = "unnamedplus"
 
-opt.number = true         -- Line numbers
+opt.number = true -- Line numbers
 opt.relativenumber = true -- Relative numbers
-opt.mouse = "a"           -- Mouse support
-opt.ignorecase = true     -- Search case insensitivity
-opt.smartcase = true      -- Case sensitive if capital used
-opt.termguicolors = true  -- 24-bit RGB colors
-opt.tabstop = 4           -- Tab width
-opt.shiftwidth = 4        -- Indent width
-opt.expandtab = true      -- Tabs to spaces
+opt.mouse = "a" -- Mouse support
+opt.ignorecase = true -- Search case insensitivity
+opt.smartcase = true -- Case sensitive if capital used
+opt.termguicolors = true -- 24-bit RGB colors
+opt.tabstop = 4 -- Tab width
+opt.shiftwidth = 4 -- Indent width
+opt.expandtab = true -- Tabs to spaces
 opt.showmode = false
 opt.undofile = true
 opt.splitright = true
 opt.splitbelow = true
 opt.list = true
-opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
+opt.listchars = { tab = "» ", trail = "·", nbsp = "␣" }
 opt.cursorline = true
 opt.scrolloff = 10
 
@@ -28,7 +28,7 @@ vim.keymap.set("v", ">", ">gv")
 
 -- Smart dd. Credit: https://www.reddit.com/r/neovim/comments/w0jzzv/comment/igfjx5y
 vim.keymap.set("n", "dd", function()
-    if vim.api.nvim_get_current_line():match("^%s*$") then
+    if vim.api.nvim_get_current_line():match "^%s*$" then
         return '"_dd'
     else
         return "dd"
@@ -43,22 +43,20 @@ vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv")
 -- Custom Netrw Toggle (Requirement: <leader>pv)
 vim.keymap.set("n", "<leader>pv", vim.cmd.Ex, { desc = "Project View (Netrw)" })
 
-local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+local lazypath = vim.fn.stdpath "data" .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
-    vim.fn.system(
-        {
-            "git",
-            "clone",
-            "--filter=blob:none",
-            "https://github.com/folke/lazy.nvim.git",
-            "--branch=stable",
-            lazypath
-        }
-    )
+    vim.fn.system {
+        "git",
+        "clone",
+        "--filter=blob:none",
+        "https://github.com/folke/lazy.nvim.git",
+        "--branch=stable",
+        lazypath,
+    }
 end
 vim.opt.rtp:prepend(lazypath)
 
-require("lazy").setup({
+require("lazy").setup {
     -- tmux navigation
     {
         "christoomey/vim-tmux-navigator",
@@ -78,16 +76,16 @@ require("lazy").setup({
     {
         "lewis6991/gitsigns.nvim",
         config = function()
-            require("gitsigns").setup({
+            require("gitsigns").setup {
                 signs = {
-                    add = { text = '+' },
-                    change = { text = '~' },
-                    delete = { text = '_' },
-                    topdelete = { text = '‾' },
-                    changedelete = { text = '~' },
+                    add = { text = "+" },
+                    change = { text = "~" },
+                    delete = { text = "_" },
+                    topdelete = { text = "‾" },
+                    changedelete = { text = "~" },
                 },
                 on_attach = function(bufnr)
-                    local gs = require("gitsigns")
+                    local gs = require "gitsigns"
 
                     local function map(mode, l, r, desc)
                         vim.keymap.set(mode, l, r, { buffer = bufnr, desc = desc })
@@ -95,16 +93,16 @@ require("lazy").setup({
 
                     local next_hunk = function()
                         if vim.wo.diff then
-                            vim.cmd.normal({ "[c", bang = true })
+                            vim.cmd.normal { "[c", bang = true }
                         else
-                            gs.nav_hunk("next")
+                            gs.nav_hunk "next"
                         end
                     end
                     local prev_hunk = function()
                         if vim.wo.diff then
-                            vim.cmd.normal({ "]c", bang = true })
+                            vim.cmd.normal { "]c", bang = true }
                         else
-                            gs.nav_hunk("prev")
+                            gs.nav_hunk "prev"
                         end
                     end
 
@@ -115,7 +113,7 @@ require("lazy").setup({
                     map({ "n", "v" }, "<Leader>hs", gs.stage_hunk, "stage hunk")
                     map("n", "<Leader>hu", gs.undo_stage_hunk, "undo stage hunk")
                 end,
-            })
+            }
         end,
     },
 
@@ -124,7 +122,7 @@ require("lazy").setup({
         "nvim-telescope/telescope.nvim",
         dependencies = { "nvim-lua/plenary.nvim" },
         config = function()
-            local builtin = require("telescope.builtin")
+            local builtin = require "telescope.builtin"
             vim.keymap.set("n", "<leader>sf", builtin.find_files, { desc = "Find Files" })
             vim.keymap.set("n", "<leader>sg", builtin.live_grep, { desc = "Live Grep" })
             vim.keymap.set("n", "<leader>sb", builtin.buffers, { desc = "Find Buffers" })
@@ -137,11 +135,11 @@ require("lazy").setup({
         "nvim-treesitter/nvim-treesitter",
         build = ":TSUpdate",
         config = function()
-            require("nvim-treesitter").setup({
+            require("nvim-treesitter").setup {
                 ensure_installed = { "lua", "go", "python", "yaml", "markdown", "bash", "vimdoc" },
                 highlight = { enable = true },
                 indent = { enable = true },
-            })
+            }
         end,
     },
 
@@ -151,7 +149,7 @@ require("lazy").setup({
         name = "catppuccin",
         priority = 1000, -- Make sure it loads before other plugins
         config = function()
-            require("catppuccin").setup({
+            require("catppuccin").setup {
                 flavour = "latte", -- latte, frappe, macchiato, mocha
                 transparent_background = false,
                 term_colors = true,
@@ -166,7 +164,7 @@ require("lazy").setup({
                         indentscope_color = "",
                     },
                 },
-            })
+            }
 
             -- Set the colorscheme
             vim.cmd.colorscheme "catppuccin"
@@ -175,11 +173,11 @@ require("lazy").setup({
 
     -- auto formatter
     {
-        'stevearc/conform.nvim',
+        "stevearc/conform.nvim",
         dependencies = { "williamboman/mason.nvim" },
         opts = {
             formatters_by_ft = {
-                python = { "ruff" },
+                python = { "ruff", "stylua" },
             },
             format_on_save = {
                 timeout_ms = 500,
@@ -201,9 +199,9 @@ require("lazy").setup({
 
             -- 2. Ensure servers are installed
             local servers = { "lua_ls", "pyright", "ts_ls" }
-            require("mason-lspconfig").setup({
+            require("mason-lspconfig").setup {
                 ensure_installed = servers,
-            })
+            }
 
             -- 3. Modern 0.12+ Native Enable
             -- This replaces the old lspconfig loop
@@ -211,28 +209,28 @@ require("lazy").setup({
 
             -- 4. Global Keymaps (Optional but recommended)
             -- These trigger only when an LSP actually attaches to a buffer
-            vim.api.nvim_create_autocmd('LspAttach', {
-                group = vim.api.nvim_create_augroup('user-lsp-attach', { clear = true }),
+            vim.api.nvim_create_autocmd("LspAttach", {
+                group = vim.api.nvim_create_augroup("user-lsp-attach", { clear = true }),
                 callback = function(event)
                     -- This helper function 'map' is defined locally inside the callback
                     -- so it has access to 'event.buf' (the current file)
                     local map = function(keys, func, desc)
-                        vim.keymap.set('n', keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
+                        vim.keymap.set("n", keys, func, { buffer = event.buf, desc = "LSP: " .. desc })
                     end
 
                     -- The Mappings
-                    map('gd', require('telescope.builtin').lsp_definitions, '[G]oto [D]efinition')
-                    map('gr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
-                    map('gI', require('telescope.builtin').lsp_implementations, '[G]oto [I]mplementation')
-                    map('<leader>D', require('telescope.builtin').lsp_type_definitions, 'Type [D]efinition')
-                    map('<leader>ds', require('telescope.builtin').lsp_document_symbols, '[D]ocument [S]ymbols')
-                    map('<leader>ws', require('telescope.builtin').lsp_dynamic_workspace_symbols, '[W]orkspace [S]ymbols')
-                    map('<leader>rn', vim.lsp.buf.rename, '[R]e[n]ame')
-                    map('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction')
-                    map('K', vim.lsp.buf.hover, 'Hover Documentation')
-                    map('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
+                    map("gd", require("telescope.builtin").lsp_definitions, "[G]oto [D]efinition")
+                    map("gr", require("telescope.builtin").lsp_references, "[G]oto [R]eferences")
+                    map("gI", require("telescope.builtin").lsp_implementations, "[G]oto [I]mplementation")
+                    map("<leader>D", require("telescope.builtin").lsp_type_definitions, "Type [D]efinition")
+                    map("<leader>ds", require("telescope.builtin").lsp_document_symbols, "[D]ocument [S]ymbols")
+                    map("<leader>ws", require("telescope.builtin").lsp_dynamic_workspace_symbols, "[W]orkspace [S]ymbols")
+                    map("<leader>rn", vim.lsp.buf.rename, "[R]e[n]ame")
+                    map("<leader>ca", vim.lsp.buf.code_action, "[C]ode [A]ction")
+                    map("K", vim.lsp.buf.hover, "Hover Documentation")
+                    map("gD", vim.lsp.buf.declaration, "[G]oto [D]eclaration")
                 end,
             })
         end,
     },
-})
+}
