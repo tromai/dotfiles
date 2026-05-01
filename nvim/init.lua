@@ -179,10 +179,10 @@ require("lazy").setup {
             formatters_by_ft = {
                 python = { "ruff", "stylua" },
             },
-            format_on_save = {
-                timeout_ms = 500,
-                lsp_fallback = true,
-            },
+            -- format_on_save = {
+            --     timeout_ms = 500,
+            --     lsp_fallback = true,
+            -- },
         },
     },
 
@@ -201,6 +201,19 @@ require("lazy").setup {
             local servers = { "lua_ls", "pyright", "ts_ls" }
             require("mason-lspconfig").setup {
                 ensure_installed = servers,
+            }
+
+            vim.lsp.config.pyright = {
+                settings = {
+                    python = {
+                        analysis = {
+                            -- This is the "PYTHONPATH" equivalent for the LSP
+                            extraPaths = { "lib", "./lib" },
+                            autoSearchPaths = true,
+                            useLibraryCodeForTypes = true,
+                        },
+                    },
+                },
             }
 
             -- 3. Modern 0.12+ Native Enable
