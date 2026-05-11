@@ -192,33 +192,51 @@ require("lazy").setup {
         dependencies = {
             "williamboman/mason.nvim",
             "williamboman/mason-lspconfig.nvim",
+            "hrsh7th/cmp-nvim-lsp",
         },
         config = function()
             -- 1. Initialize Mason
             require("mason").setup()
 
-            -- 2. Ensure servers are installed
-            local servers = { "lua_ls", "pyright", "ts_ls" }
-            require("mason-lspconfig").setup {
-                ensure_installed = servers,
-            }
-
-            vim.lsp.config.pyright = {
-                settings = {
-                    python = {
-                        analysis = {
-                            -- This is the "PYTHONPATH" equivalent for the LSP
-                            extraPaths = { "lib", "./lib" },
-                            autoSearchPaths = true,
-                            useLibraryCodeForTypes = true,
+            -- 2. Define your servers and their custom settings
+            local servers = {
+                lua_ls = {
+                    settings = {
+                        Lua = { diagnostics = { globals = { "vim" } } },
+                    },
+                },
+                pyright = {
+                    settings = {
+                        python = {
+                            analysis = {
+                                extraPaths = { "lib", "./lib" },
+                                autoSearchPaths = true,
+                                useLibraryCodeForTypes = true,
+                            },
                         },
                     },
                 },
+                ts_ls = {},
             }
 
-            -- 3. Modern 0.12+ Native Enable
-            -- This replaces the old lspconfig loop
-            vim.lsp.enable(servers)
+            -- 3. Modern 0.12+ Native Integration
+            -- This part ensures Mason has them and Neovim knows their "superpowers" (capabilities)
+            require("mason-lspconfig").setup({
+                ensure_installed = vim.tbl_keys(servers),
+            })
+
+            -- This tells the LSP that we have a completion menu (nvim-cmp)
+            local capabilities = require("cmp_nvim_lsp").default_capabilities()
+
+            -- We loop through our table to register and enable them
+            for server_name, server_config in pairs(servers) do
+                -- Inject the completion capabilities into the server config
+                server_config.capabilities = capabilities
+
+                -- Register the template and turn it on
+                vim.lsp.config[server_name] = server_config
+                vim.lsp.enable(server_name)
+            end
 
             -- 4. Global Keymaps (Optional but recommended)
             -- These trigger only when an LSP actually attaches to a buffer
@@ -246,4 +264,41 @@ require("lazy").setup {
             })
         end,
     },
+    {
+        "hrsh7th/nvim-cmp",
+        dependencies = {
+            "hrsh7th/cmp-nvim-lsp", -- The bridge
+            "L3MON4D3/LuaSnip",     -- Required: Snippet engine
+            "saadparwaiz1/cmp_luasnip", 
+        },
+        config = function()
+            local cmp = require("cmp")
+            cmp.setup({
+                snippet = {
+                    expand = function(args)
+                        require("luasnip").lsp_expand(args.body)
+                    end,
+                },
+                -- This is the crucial part!
+                -- It tells the menu to look at your LSP for suggestions.
+                sources = cmp.config.sources({
+                    { name = "nvim_lsp" },
+                    { name = "luasnip" },
+                }, {
+                    { name = "buffer" },
+                }),
+                mapping = cmp.mapping.preset.insert({
+                    ["<C-Space>"] = cmp.mapping.complete(), -- Force open menu
+                    ["<CR>"] = cmp.mapping.confirm({ select = true }), -- Accept suggestion
+                    ["<Tab>"] = cmp.mapping(function(fallback)
+                        if cmp.visible() then
+                            cmp.select_next_item()
+                        else
+                            fallback()
+                        end
+                    end, { "i", "s" }),
+                }),
+            })
+        end,
+    }
 }
