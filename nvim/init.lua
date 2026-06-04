@@ -22,6 +22,9 @@ opt.listchars = { tab = "» ", trail = "·", nbsp = "␣" }
 opt.cursorline = true
 opt.scrolloff = 10
 
+-- Increases signcolumn width for gitsigns and diagnostics
+vim.opt.signcolumn = "auto:2"
+
 -- Indentation
 vim.keymap.set("v", "<", "<gv")
 vim.keymap.set("v", ">", ">gv")
@@ -42,6 +45,10 @@ vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv")
 
 -- Custom Netrw Toggle (Requirement: <leader>pv)
 vim.keymap.set("n", "<leader>pv", vim.cmd.Ex, { desc = "Project View (Netrw)" })
+
+-- Quick fix
+vim.keymap.set('n', ']q', ':cnext<CR>')
+vim.keymap.set('n', '[q', ':cprev<CR>')
 
 local lazypath = vim.fn.stdpath "data" .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
@@ -250,6 +257,13 @@ require("lazy").setup {
                     end
 
                     -- The Mappings
+                    map("gl", vim.diagnostic.open_float, "line diagnostic")
+                    map("[d", function()
+                        vim.diagnostic.jump({ count = -1, float = true })
+                    end, "prev diagnostic")
+                    map("]d", function()
+                        vim.diagnostic.jump({ count = 1, float = true })
+                    end, "next diagnostic")
                     map("gd", require("telescope.builtin").lsp_definitions, "[G]oto [D]efinition")
                     map("gr", require("telescope.builtin").lsp_references, "[G]oto [R]eferences")
                     map("gI", require("telescope.builtin").lsp_implementations, "[G]oto [I]mplementation")
