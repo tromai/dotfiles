@@ -3,7 +3,17 @@ vim.g.maplocalleader = " "
 local opt = vim.opt
 
 vim.opt.clipboard = "unnamedplus"
-
+vim.g.clipboard = {
+  name = 'OSC 52',
+  copy = {
+    ['+'] = require('vim.ui.clipboard.osc52').copy('+'),
+    ['*'] = require('vim.ui.clipboard.osc52').copy('*'),
+  },
+  paste = {
+    ['+'] = require('vim.ui.clipboard.osc52').paste('+'),
+    ['*'] = require('vim.ui.clipboard.osc52').paste('*'),
+  },
+}
 opt.number = true -- Line numbers
 opt.relativenumber = true -- Relative numbers
 opt.mouse = "a" -- Mouse support
