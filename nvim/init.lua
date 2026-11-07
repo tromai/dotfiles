@@ -326,3 +326,6 @@ require("lazy").setup {
         end,
     }
 }
+
+-- pi coding agent integration
+require("pi")
