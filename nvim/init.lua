@@ -53,6 +53,28 @@ end, { noremap = true, expr = true })
 vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv")
 vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv")
 
+-- Copy the current file path to the system clipboard.
+-- Relative paths use Neovim's working directory (normally where you launched it).
+local function copy_file_path(relative)
+    local path = vim.api.nvim_buf_get_name(0)
+    if path == "" then
+        vim.notify("Current buffer has no file path", vim.log.levels.WARN)
+        return
+    end
+
+    path = relative and vim.fn.fnamemodify(path, ":.") or vim.fn.fnamemodify(path, ":p")
+    vim.fn.setreg("+", path)
+    vim.fn.setreg('"', path)
+    vim.notify("Copied " .. (relative and "relative" or "absolute") .. " path: " .. path)
+end
+
+vim.keymap.set("n", "<leader>fp", function()
+    copy_file_path(false)
+end, { desc = "Copy absolute file path" })
+vim.keymap.set("n", "<leader>fr", function()
+    copy_file_path(true)
+end, { desc = "Copy relative file path" })
+
 -- Custom Netrw Toggle (Requirement: <leader>pv)
 vim.keymap.set("n", "<leader>pv", vim.cmd.Ex, { desc = "Project View (Netrw)" })
 

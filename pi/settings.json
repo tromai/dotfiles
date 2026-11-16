@@ -1,11 +1,20 @@
 {
-  "lastChangelogVersion": "1.5.0",
+  "lastChangelogVersion": "1.5.2",
   "theme": "tromai-catppuccin-latte",
+  "defaultProvider": "openrouter",
+  "defaultModel": "moonshotai/kimi-k3.1-pro",
   "defaultThinkingLevel": "high",
+  "hideThinkingBlock": true,
   "packages": [
-    "npm:pi-subagents"
+    "npm:pi-subagents",
+    "npm:pi-lens",
+    "npm:pi-web-access",
+    "npm:pi-autoname"
   ],
   "extensionChangelogVersions": {
-    "{\"source\":\"npm:pi-subagents\",\"scope\":\"user\"}": "0.84.0"
+    "{\"source\":\"npm:pi-subagents\",\"scope\":\"user\"}": "0.88.0",
+    "{\"source\":\"npm:pi-lens\",\"scope\":\"user\"}": "4.4.12",
+    "{\"source\":\"npm:pi-web-access\",\"scope\":\"user\"}": "0.47.0",
+    "{\"source\":\"npm:pi-autoname\",\"scope\":\"user\"}": "0.7.2"
   }
 }

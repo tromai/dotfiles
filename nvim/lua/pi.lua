@@ -1,9 +1,9 @@
 -- pi.nvim — run pi in a split terminal and send selections to it
 -- Keymaps (leader = space):
 --   <leader>pp        open / focus the pi split
---   <leader>ps        (visual) send selection to pi, ask your question there
---   <leader>pa        (visual) prompt for a question, send selection + question
---   <leader>pa        (normal) prompt for a question, send whole file + question
+--   <leader>pa        (visual) paste the selection into pi's prompt (no
+--                      submit): keep typing your question in pi and Enter there
+--   <leader>pa        (normal) same, but pastes the whole current file
 --   <leader>pd        close the pi split (keeps the session buffer around)
 --
 -- Navigation out of the pi terminal split:
@@ -61,8 +61,9 @@ function M.open()
   return buf
 end
 
----Send text into the pi prompt and submit it.
---Multiline text is wrapped in a bracketed paste so pi treats it as one paste.
+---Paste text into the pi prompt WITHOUT submitting: focus lands in pi,
+--the paste lands at pi's cursor (an in-progress draft is kept), and you
+--keep typing your question there and Enter when ready.
 function M.send(text)
   M.open()
   if not chan then
@@ -70,13 +71,6 @@ function M.send(text)
   end
   local paste = "\27[200~" .. text .. "\27[201~"
   vim.fn.chansend(chan, paste)
-  vim.defer_fn(function()
-    if chan then
-      vim.fn.chansend(chan, "\r") -- Enter submits the prompt
-      -- No scrolling here: we are in terminal mode at this point, and
-      -- pi's TUI follows its own output.
-    end
-  end, 100)
 end
 
 -- Helper: visual selection respecting start/end columns
@@ -99,45 +93,31 @@ local function get_selection()
   return table.concat(lines, "\n")
 end
 
-local function ask_with(question_fn)
-  local q = vim.fn.input("pi> ")
-  if q == "" then
-    return
-  end
-  local context = question_fn()
-  if context and context ~= "" then
-    M.send(context .. "\n\n" .. q)
-  else
-    M.send(q)
-  end
-end
-
 -- ── Keymaps ─────────────────────────────────────────────────────────────
+
+-- Lua mapping callbacks run while still in Visual mode, but the '< '>
+-- marks are not updated until Visual mode is exited. Exit first, so
+-- get_selection() sees the current selection.
+local function exit_visual()
+  vim.cmd("normal! " .. vim.keycode("<Esc>"))
+end
 
 -- Open / focus pi
 vim.keymap.set("n", "<leader>pp", M.open, { desc = "pi: open/focus split" })
 
--- Send visual selection, no question: pi opens with the text in the prompt
--- so you can continue typing your question in pi itself
-vim.keymap.set("v", "<leader>ps", function()
-  M.send(get_selection())
-end, { desc = "pi: send selection" })
-
--- Ask about the visual selection
+-- Paste the visual selection into pi's prompt: no popup, no submit.
+-- You land in pi's prompt with the selection pasted; type your question
+-- there and Enter when ready.
 vim.keymap.set("v", "<leader>pa", function()
-  local sel = get_selection()
-  ask_with(function()
-    return "```\n" .. sel .. "\n```"
-  end)
-end, { desc = "pi: ask about selection" })
+  exit_visual()
+  M.send(get_selection())
+end, { desc = "pi: paste selection into prompt" })
 
--- Ask about the whole current file
+-- Paste the whole current file into pi's prompt (no submit)
 vim.keymap.set("n", "<leader>pa", function()
   local lines = table.concat(vim.api.nvim_buf_get_lines(0, 0, -1, false), "\n")
-  ask_with(function()
-    return "```\n" .. lines .. "\n```"
-  end)
-end, { desc = "pi: ask about file" })
+  M.send(lines)
+end, { desc = "pi: paste file into prompt" })
 
 -- Close the pi window without killing the session buffer (reopen with <leader>pp)
 vim.keymap.set("n", "<leader>pd", function()
